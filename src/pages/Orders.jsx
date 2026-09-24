@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import { api } from "../api.js";
 
 export default function Orders({ token, onOpen }) {
   const [jobs, setJobs] = useState([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("/api/jobs/mine", { headers: { Authorization: `Bearer ${token}` } })
+    fetch(api("/api/jobs/mine"), { headers: { Authorization: `Bearer ${token}` } })
       .then(async (response) => {
         const body = await response.json();
         if (!response.ok) throw new Error(body.error || "Could not load orders");

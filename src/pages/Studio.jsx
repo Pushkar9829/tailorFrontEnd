@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { api } from "../api.js";
 import CadCanvas from "../components/Canvas/CadCanvas.jsx";
 import GarmentView from "../components/Canvas/GarmentView.jsx";
 import SketchBoard from "../components/Canvas/SketchBoard.jsx";
@@ -73,9 +74,9 @@ export default function Studio({ token, customerName, saved }) {
     let ignore = false;
     async function load() {
       try {
-        const list = await fetch("/api/patterns").then((response) => response.json());
+        const list = await fetch(api("/api/patterns")).then((response) => response.json());
         if (!ignore && Array.isArray(list) && list[0]) {
-          const full = await fetch(`/api/patterns/${list[0].id}`).then((response) => response.json());
+          const full = await fetch(api(`/api/patterns/${list[0].id}`)).then((response) => response.json());
           if (full?.pieces) setPattern(full);
         }
       } catch {
@@ -86,7 +87,7 @@ export default function Studio({ token, customerName, saved }) {
         return;
       }
       try {
-        const jobs = await fetch("/api/jobs/mine", { headers: { Authorization: `Bearer ${token}` } }).then((response) => response.json());
+        const jobs = await fetch(api("/api/jobs/mine"), { headers: { Authorization: `Bearer ${token}` } }).then((response) => response.json());
         if (!ignore && Array.isArray(jobs) && jobs[0]) applyMeasurement(jobs[0]);
       } catch {
         // Leave the default sizes in the form.
@@ -127,7 +128,7 @@ export default function Studio({ token, customerName, saved }) {
   async function saveJob() {
     setSaveMessage("");
     try {
-      const response = await fetch("/api/jobs", {
+      const response = await fetch(api("/api/jobs"), {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({

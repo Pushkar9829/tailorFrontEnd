@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { api } from "../api.js";
 import CadCanvas from "../components/Canvas/CadCanvas.jsx";
 import FormulaEditor from "../components/Formula/FormulaEditor.jsx";
 import { BASIC_BLOUSE_FRONT, runPattern } from "../engine/index.js";
@@ -25,9 +26,9 @@ export default function Admin({ token, section = "preview" }) {
   const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
 
   async function refresh() {
-    const list = await fetch("/api/patterns").then((response) => response.json());
+    const list = await fetch(api("/api/patterns")).then((response) => response.json());
     if (Array.isArray(list)) setCatalog(list);
-    const savedResponse = await fetch("/api/jobs", { headers });
+    const savedResponse = await fetch(api("/api/jobs"), { headers });
     const saved = await savedResponse.json();
     if (!savedResponse.ok) {
       setJobs([]);
@@ -52,7 +53,7 @@ export default function Admin({ token, section = "preview" }) {
     : null;
 
   async function openPattern(id) {
-    const full = await fetch(`/api/patterns/${id}`).then((response) => response.json());
+    const full = await fetch(api(`/api/patterns/${id}`)).then((response) => response.json());
     setPattern(full);
     setValues(defaultsFrom(full));
   }
@@ -79,7 +80,7 @@ export default function Admin({ token, section = "preview" }) {
   }
 
   async function downloadJob(id, kind) {
-    const response = await fetch(`/api/jobs/${id}/${kind}`, { headers: { Authorization: `Bearer ${token}` } });
+    const response = await fetch(api(`/api/jobs/${id}/${kind}`), { headers: { Authorization: `Bearer ${token}` } });
     if (!response.ok) {
       setJobsError("Could not download that file. Sign out and sign in again.");
       return;
@@ -95,7 +96,7 @@ export default function Admin({ token, section = "preview" }) {
 
   async function savePattern() {
     setMessage("");
-    const response = await fetch("/api/patterns", { method: "POST", headers, body: JSON.stringify(pattern) });
+    const response = await fetch(api("/api/patterns"), { method: "POST", headers, body: JSON.stringify(pattern) });
     const body = await response.json();
     if (!response.ok) {
       setMessage(body.error || "Save failed");
@@ -211,7 +212,7 @@ export default function Admin({ token, section = "preview" }) {
               next.id = `formula-${Date.now()}`;
               next.name = name;
               next.version = 1;
-              const response = await fetch("/api/patterns", { method: "POST", headers, body: JSON.stringify(next) });
+              const response = await fetch(api("/api/patterns"), { method: "POST", headers, body: JSON.stringify(next) });
               const body = await response.json();
               if (!response.ok) {
                 setMessage(body.error || "Save failed");

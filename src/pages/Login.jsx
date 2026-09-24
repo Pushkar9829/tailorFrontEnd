@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { api } from "../api.js";
 
 const ROLES = [
   { id: "customer", title: "Customer", username: "customer", password: "customer", text: "Enter sizes and download the cut file." },
@@ -23,7 +24,7 @@ export default function Login({ onSuccess }) {
     event.preventDefault();
     setError("");
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch(api("/api/auth/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
